@@ -1,0 +1,9 @@
+{
+  "name": "No Pain Please",
+  "short_name": "No Pain",
+  "theme_color": "#1c1917",
+  "background_color": "#fffbeb",
+  "display": "standalone",
+  "start_url": "/",
+  "icons": [{ "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

@@ -1,0 +1,38 @@
+package com.nopainplease.api.security;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+@Component
+public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
+  public static final String PRINCIPAL_ATTRIBUTE = FirebasePrincipal.class.getName();
+
+  @Override protected boolean shouldNotFilter(HttpServletRequest request) {
+    return !request.getRequestURI().startsWith("/api/");
+  }
+
+  @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+    String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+    if (header == null || !header.startsWith("Bearer ")) { unauthorized(response); return; }
+    try {
+      FirebaseToken token = FirebaseAuth.getInstance().verifyIdToken(header.substring(7));
+      request.setAttribute(PRINCIPAL_ATTRIBUTE, new FirebasePrincipal(token.getUid(), token.getEmail()));
+      chain.doFilter(request, response);
+    } catch (FirebaseAuthException | IllegalArgumentException exception) { unauthorized(response); }
+  }
+
+  private void unauthorized(HttpServletResponse response) throws IOException {
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.setContentType("application/json");
+    response.getWriter().write("{\"message\":\"A valid Firebase ID token is required\"}");
+  }
+}

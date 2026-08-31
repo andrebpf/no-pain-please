@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Workouts are only accessed through the trusted Spring Boot API.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

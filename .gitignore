@@ -1,0 +1,21 @@
+# Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Java
+backend/target/
+*.class
+
+# Local Firebase and environment configuration
+.firebase/
+.firebaserc
+.env
+.env.*
+!.env.example
+service-account*.json
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
