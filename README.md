@@ -59,6 +59,30 @@ npm start
 
 The frontend runs on `http://localhost:4200` and calls `http://localhost:8080/api` in development. Set `API_CORS_ALLOWED_ORIGIN` before starting the API if you use a different local frontend origin.
 
+## Run with Firebase emulators
+
+The local Angular configuration automatically connects Firebase Authentication to the Auth emulator. The API uses the Firestore emulator under Spring's `local` profile while still validating Firebase ID tokens.
+
+In separate terminals:
+
+```bash
+# Terminal 1: emulators
+cp .env.local.example .env.local
+set -a; . ./.env.local; set +a
+firebase emulators:start --only auth,firestore --project "$GOOGLE_CLOUD_PROJECT"
+
+# Terminal 2: API
+set -a; . ./.env.local; set +a
+cd backend
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+
+# Terminal 3: PWA (uses environment.local.ts in development)
+cd frontend
+npm start
+```
+
+Open the PWA at `http://localhost:4200`. The Firebase Emulator UI is at `http://localhost:4000`. The starter uses `no-pain-please-local` as its local project id; change it consistently in [.env.local.example](.env.local.example), [application-local.yml](backend/src/main/resources/application-local.yml), and [environment.local.ts](frontend/src/environments/environment.local.ts) if you prefer another id.
+
 ## Deploy
 
 Build and deploy the API to Cloud Run, substituting your project and preferred region:

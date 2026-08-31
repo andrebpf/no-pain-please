@@ -1,5 +1,6 @@
 export const environment = {
   production: false,
+  firebaseEmulator: undefined as { authUrl: string } | undefined,
   apiBaseUrl: 'http://localhost:8080/api',
   firebase: {
     apiKey: 'REPLACE_WITH_FIREBASE_WEB_API_KEY',

@@ -1,0 +1,13 @@
+# Run with: mvn spring-boot:run -Dspring-boot.run.profiles=local
+# Firebase Authentication verification needs FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099.
+spring:
+  config:
+    activate:
+      on-profile: local
+
+app:
+  cors:
+    allowed-origin: http://localhost:4200
+  firebase:
+    project-id: no-pain-please-local
+    firestore-emulator-host: 127.0.0.1:8081

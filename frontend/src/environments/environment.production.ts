@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  firebaseEmulator: undefined as { authUrl: string } | undefined,
   apiBaseUrl: 'https://REPLACE_WITH_CLOUD_RUN_URL/api',
   firebase: {
     apiKey: 'REPLACE_WITH_FIREBASE_WEB_API_KEY',
