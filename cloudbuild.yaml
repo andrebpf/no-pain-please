@@ -1,6 +1,11 @@
 # CI/CD pipeline. Environment-specific values live in deploy/environments/*.conf.
 timeout: 1200s
 
+# A trigger using the dedicated deployer account cannot write to Google's
+# default log bucket. Keep build logs in Cloud Logging instead.
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 substitutions:
   _DEPLOY_ENV: production
 
