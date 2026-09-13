@@ -4,7 +4,7 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
-import com.google.cloud.firestore.Timestamp;
+import com.google.cloud.Timestamp;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;

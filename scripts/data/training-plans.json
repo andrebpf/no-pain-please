@@ -1,0 +1,197 @@
+[
+  {
+    "id": "A",
+    "title": "Construa sua base",
+    "description": "Pernas, peito, costas e abdômen",
+    "cardio": "10–15 minutos de esteira inclinada, em ritmo moderado.",
+    "exercises": [
+      {
+        "id": "A-1",
+        "name": "Leg press 45°",
+        "sets": 3,
+        "reps": "8–12",
+        "rest": "90 s",
+        "group": "Pernas",
+        "video": "https://www.youtube.com/results?search_query=Leg%20press%2045%C2%B0%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "A-2",
+        "name": "Mesa flexora ou cadeira flexora",
+        "sets": 3,
+        "reps": "10–15",
+        "rest": "60–90 s",
+        "group": "Posterior de coxa",
+        "video": "https://www.youtube.com/results?search_query=Mesa%20flexora%20ou%20cadeira%20flexora%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "A-3",
+        "name": "Supino na máquina",
+        "sets": 3,
+        "reps": "8–12",
+        "rest": "90 s",
+        "group": "Peito",
+        "video": "https://www.youtube.com/results?search_query=Supino%20na%20m%C3%A1quina%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "A-4",
+        "name": "Remada baixa na máquina",
+        "sets": 3,
+        "reps": "8–12",
+        "rest": "90 s",
+        "group": "Costas",
+        "video": "https://www.youtube.com/results?search_query=Remada%20baixa%20na%20m%C3%A1quina%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "A-5",
+        "name": "Elevação lateral",
+        "sets": 2,
+        "reps": "12–15",
+        "rest": "60 s",
+        "group": "Ombros",
+        "video": "https://www.youtube.com/results?search_query=Eleva%C3%A7%C3%A3o%20lateral%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "A-6",
+        "name": "Abdominal na máquina",
+        "sets": 3,
+        "reps": "12–15",
+        "rest": "60 s",
+        "group": "Abdômen",
+        "video": "https://www.youtube.com/results?search_query=Abdominal%20na%20m%C3%A1quina%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      }
+    ]
+  },
+  {
+    "id": "B",
+    "title": "Encontre seu ritmo",
+    "description": "Pernas, glúteos e membros superiores",
+    "cardio": "10–12 minutos de bicicleta ou elíptico.",
+    "exercises": [
+      {
+        "id": "B-1",
+        "name": "Hack squat ou agachamento no Smith",
+        "sets": 3,
+        "reps": "8–12",
+        "rest": "90–120 s",
+        "group": "Pernas",
+        "video": "https://www.youtube.com/results?search_query=Hack%20squat%20ou%20agachamento%20no%20Smith%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "B-2",
+        "name": "Elevação pélvica na máquina",
+        "sets": 3,
+        "reps": "10–12",
+        "rest": "90 s",
+        "group": "Glúteos",
+        "video": "https://www.youtube.com/results?search_query=Eleva%C3%A7%C3%A3o%20p%C3%A9lvica%20na%20m%C3%A1quina%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "B-3",
+        "name": "Puxada alta pela frente",
+        "sets": 3,
+        "reps": "8–12",
+        "rest": "90 s",
+        "group": "Costas",
+        "video": "https://www.youtube.com/results?search_query=Puxada%20alta%20pela%20frente%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "B-4",
+        "name": "Supino inclinado na máquina",
+        "sets": 3,
+        "reps": "8–12",
+        "rest": "90 s",
+        "group": "Peito",
+        "video": "https://www.youtube.com/results?search_query=Supino%20inclinado%20na%20m%C3%A1quina%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "B-5",
+        "name": "Desenvolvimento de ombros na máquina",
+        "sets": 2,
+        "reps": "10–12",
+        "rest": "60–90 s",
+        "group": "Ombros",
+        "video": "https://www.youtube.com/results?search_query=Desenvolvimento%20de%20ombros%20na%20m%C3%A1quina%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "B-6",
+        "name": "Panturrilha no leg press",
+        "sets": 3,
+        "reps": "12–15",
+        "rest": "60 s",
+        "group": "Panturrilhas",
+        "video": "https://www.youtube.com/results?search_query=Panturrilha%20no%20leg%20press%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      }
+    ]
+  },
+  {
+    "id": "C",
+    "title": "Continue evoluindo",
+    "description": "Pernas, peito, costas e braços",
+    "cardio": "",
+    "exercises": [
+      {
+        "id": "C-1",
+        "name": "Leg press horizontal ou leg press 45°",
+        "sets": 3,
+        "reps": "10–12",
+        "rest": "90 s",
+        "group": "Pernas",
+        "video": "https://www.youtube.com/results?search_query=Leg%20press%20horizontal%20ou%20leg%20press%2045%C2%B0%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "C-2",
+        "name": "Cadeira extensora",
+        "sets": 2,
+        "reps": "12–15",
+        "rest": "60 s",
+        "group": "Quadríceps",
+        "video": "https://www.youtube.com/results?search_query=Cadeira%20extensora%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "C-3",
+        "name": "Cadeira flexora",
+        "sets": 3,
+        "reps": "10–15",
+        "rest": "60–90 s",
+        "group": "Posterior de coxa",
+        "video": "https://www.youtube.com/results?search_query=Cadeira%20flexora%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "C-4",
+        "name": "Crucifixo na máquina — peck deck",
+        "sets": 3,
+        "reps": "10–15",
+        "rest": "60–90 s",
+        "group": "Peito",
+        "video": "https://www.youtube.com/results?search_query=Crucifixo%20na%20m%C3%A1quina%20%E2%80%94%20peck%20deck%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "C-5",
+        "name": "Remada articulada com apoio no peito",
+        "sets": 3,
+        "reps": "8–12",
+        "rest": "90 s",
+        "group": "Costas",
+        "video": "https://www.youtube.com/results?search_query=Remada%20articulada%20com%20apoio%20no%20peito%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "C-6",
+        "name": "Rosca bíceps na máquina",
+        "sets": 2,
+        "reps": "10–15",
+        "rest": "60 s",
+        "group": "Bíceps",
+        "video": "https://www.youtube.com/results?search_query=Rosca%20b%C3%ADceps%20na%20m%C3%A1quina%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      },
+      {
+        "id": "C-7",
+        "name": "Tríceps na polia com corda",
+        "sets": 2,
+        "reps": "10–15",
+        "rest": "60 s",
+        "group": "Tríceps",
+        "video": "https://www.youtube.com/results?search_query=Tr%C3%ADceps%20na%20polia%20com%20corda%20execu%C3%A7%C3%A3o%20exerc%C3%ADcio"
+      }
+    ]
+  }
+]

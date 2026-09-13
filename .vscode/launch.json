@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Java API (local Firebase emulators)",
+      "request": "launch",
+      "mainClass": "com.nopainplease.api.NoPainPleaseApplication",
+      "cwd": "${workspaceFolder}/backend",
+      "args": ["--spring.profiles.active=local"],
+      "env": {
+        "GOOGLE_CLOUD_PROJECT": "no-pain-please-local",
+        "FIREBASE_AUTH_EMULATOR_HOST": "127.0.0.1:9099",
+        "FIRESTORE_EMULATOR_HOST": "127.0.0.1:8081",
+        "PORT": "8080"
+      },
+      "console": "integratedTerminal"
+    }
+  ]
+}

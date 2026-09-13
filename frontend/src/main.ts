@@ -1,3 +1,5 @@
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
 import { ApplicationConfig, isDevMode, provideZoneChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -7,6 +9,8 @@ import { provideAuth, connectAuthEmulator, getAuth } from '@angular/fire/auth';
 import { AppComponent } from './app/app.component';
 import { firebaseTokenInterceptor } from './app/firebase-token.interceptor';
 import { environment } from './environments/environment';
+
+registerLocaleData(localePt, 'pt-BR');
 
 const appConfig: ApplicationConfig = {
   providers: [

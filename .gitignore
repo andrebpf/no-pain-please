@@ -1,14 +1,19 @@
-# Angular
-frontend/node_modules/
-frontend/dist/
-frontend/.angular/
+# Node / Angular dependencies and generated output (at any depth)
+node_modules/
+dist/
+.angular/
+coverage/
+.playwright-mcp/
+*.tsbuildinfo
 
 # Java
-backend/target/
+target/
 *.class
 
 # Local Firebase and environment configuration
 .firebase/
+*-debug.log
+*-debug.*.log
 .firebaserc
 .env
 .env.*
@@ -18,5 +23,12 @@ service-account*.json
 
 # IDE / OS
 .idea/
-.vscode/
+.vscode/*
+!.vscode/launch.json
+!.vscode/extensions.json
 .DS_Store
+
+# AI Files
+.agents/
+.codex/
+skills-lock.json
