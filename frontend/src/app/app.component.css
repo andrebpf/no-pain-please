@@ -111,6 +111,32 @@ main { width: calc(100% - 248px); max-width: 1700px; margin-left: 248px; padding
 .muscle { display: inline-block; margin: 0 7px 4px 0; color: #7a827f; font-size: 9px; }
 .exercise-name a { display: inline-block; padding: 4px 0; color: #3159ed; font-size: 9px; font-weight: 750; text-decoration: none; }
 .exercise-name a:hover { color: #1438b7; text-decoration: underline; }
+.weight-history-toggle { display: block; padding: 3px 0; color: #45514b; background: transparent; border: 0; font-size: 9px; font-weight: 800; text-align: left; text-decoration: underline; text-underline-offset: 3px; }
+.weight-history-toggle:hover { color: var(--blue); }
+.weight-history-toggle:focus-visible,.weight-history-close:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.weight-history-panel { grid-column: 1/-1; margin-top: 4px; padding: 16px; background: #f1f4ec; border: 1px solid #d6ddd0; border-radius: 6px; }
+.weight-history-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.weight-history-heading .eyebrow { margin: 0 0 4px; font-size: 8px; }
+.weight-history-heading h4 { margin: 0; font-size: 13px; font-weight: 850; }
+.weight-history-close { display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; padding: 0; color: #526059; background: #fff; border: 1px solid #cfd7c9; border-radius: 4px; font-size: 20px; line-height: 1; }
+.weight-history-close:hover { color: var(--ink); border-color: #9ca89b; }
+.weight-history-state { margin: 16px 0 2px; color: #637069; font-size: 11px; line-height: 1.5; }
+.weight-history-summary { display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px 8px; margin-top: 14px; }
+.weight-history-summary strong { color: var(--ink); font-size: 22px; font-variant-numeric: tabular-nums; }
+.weight-history-summary span,.weight-history-summary small { color: #69756e; font-size: 9px; }
+.weight-history-summary small { width: 100%; }
+.weight-history-summary small.positive { color: #407100; }
+.weight-history-summary small.negative { color: #a2423a; }
+.weight-history-chart-wrap { position: relative; width: 100%; max-width: 440px; margin-top: 9px; }
+.weight-history-chart { display: block; width: 100%; height: auto; overflow: visible; }
+.weight-history-chart .weight-history-grid { stroke: #c6cec0; stroke-width: 1; stroke-dasharray: 2 3; }
+.weight-history-chart polyline { fill: none; stroke: var(--blue); stroke-linecap: round; stroke-linejoin: round; stroke-width: 3; }
+.weight-history-chart circle { fill: var(--lime); stroke: var(--ink); stroke-width: 2; }
+.weight-history-y-axis,.weight-history-x-axis { position: absolute; inset: 0; pointer-events: none; color: #6d7871; font-size: 8px; font-variant-numeric: tabular-nums; }
+.weight-history-y-axis span { position: absolute; left: 0; transform: translateY(-50%); }
+.weight-history-x-axis span { position: absolute; top: 88%; transform: translateX(-50%); white-space: nowrap; }
+.weight-history-x-axis span.start { transform: translateX(0); }
+.weight-history-x-axis span.end { transform: translateX(-100%); }
 .exercise-meta { text-align: center; font-size: 11px; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .exercise-meta strong { font-weight: 850; }
 .exercise-meta strong span { margin: 0 3px; color: #89908d; font-size: 10px; }

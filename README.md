@@ -89,7 +89,7 @@ In separate terminals:
 # Terminal 1: emulators
 cp .env.local.example .env.local
 set -a; . ./.env.local; set +a
-firebase emulators:start --only auth,firestore --project "$GOOGLE_CLOUD_PROJECT"
+./scripts/start-local-emulators.sh
 
 # Terminal 2: API
 set -a; . ./.env.local; set +a
@@ -112,7 +112,7 @@ project to finish importing.
 Start the emulators in a terminal at the repository root:
 
 ```bash
-firebase emulators:start --only auth,firestore --project no-pain-please-local
+./scripts/start-local-emulators.sh
 ```
 
 In **Run and Debug**, select **Java API (local Firebase emulators)** and press
@@ -219,12 +219,29 @@ days. Dates use America/Sao_Paulo. The next day starts with unchecked exercises,
 and the next suggested plan follows the last earlier day with attendance.
 Previous weights are shown as references; entering a weight alone does not
 record attendance. A completed exercise automatically records attendance.
+Each weight is kept with its training date, and the API exposes the chronological
+series for a single exercise at `GET /api/exercise-weight-history/{exerciseId}`.
+This read model includes zero weights, omits exercises without a registered
+weight, and is ready for a future evolution screen.
 One plan is recorded per day; select it before entering progress. The history
 and date picker allow reviewing and updating earlier days.
 
-Keep emulator data across restarts by starting Firebase with
-`--import=.firebase/local-data --export-on-exit=.firebase/local-data` after an
-initial export (`firebase emulators:export .firebase/local-data`).
+`./scripts/start-local-emulators.sh` saves Auth and Firestore state in
+`.firebase/local-data` when it stops and reloads it on the next start. The
+folder is ignored by Git. Run `node scripts/seed-local-training.mjs USER_UID`
+once after creating your local user; the imported A/B/C plans, along with later
+training progress, are then preserved across emulator restarts.
+
+For a ready-to-use local account with A/B/C plans and sample history, start the
+emulators and run:
+
+```bash
+node scripts/seed-local-demo-user.mjs
+```
+
+In the development PWA, use **Entrar no modo demonstração**. It signs in as
+`demo@no-pain-please.local` (password: `demo-local-password`) and is available
+only while the local Auth Emulator is configured.
 
 Validation, with the API on port 8080 and the emulators running:
 

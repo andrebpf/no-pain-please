@@ -16,7 +16,7 @@
     <header class="topbar"><span class="live-pill"><i aria-hidden="true"></i> Plano ativo</span><span class="today-label">{{ today() | date:'EEEE, d MMMM':'':'pt-BR' }}</span></header>
     @if (!authReady()) {<section class="state" role="status">Preparando seu espaço…</section>}
     @else if (!user()) {
-      <section class="welcome"><p class="eyebrow">MENOS COMPLICAÇÃO. MAIS CONSTÂNCIA.</p><h1>Seu próximo passo<br>começa com um treino<span>.</span></h1><p>Seus exercícios, suas cargas e cada pequena conquista.<br>Tudo no mesmo lugar, no seu ritmo.</p><button class="primary" (click)="login()">Entrar com Google <span aria-hidden="true">↗</span></button><small>Use sua conta já cadastrada.</small><div class="welcome-art" aria-hidden="true"><span>BUILD<br>YOUR<br>RHYTHM.</span><i></i></div></section>
+      <section class="welcome"><p class="eyebrow">MENOS COMPLICAÇÃO. MAIS CONSTÂNCIA.</p><h1>Seu próximo passo<br>começa com um treino<span>.</span></h1><p>Seus exercícios, suas cargas e cada pequena conquista.<br>Tudo no mesmo lugar, no seu ritmo.</p><button class="primary" (click)="login()">{{ localDemoLogin ? 'Entrar no modo demonstração' : 'Entrar com Google' }} <span aria-hidden="true">↗</span></button><small>{{ localDemoLogin ? 'Use após executar o seed local.' : 'Use sua conta já cadastrada.' }}</small><div class="welcome-art" aria-hidden="true"><span>BUILD<br>YOUR<br>RHYTHM.</span><i></i></div></section>
       @if (error()) {<p class="error" role="alert">{{ error() }}</p>}
     } @else {
       <section class="page-heading"><div><p class="eyebrow">OLÁ, {{ firstName() }}. HORA DO TREINO.</p><h1>{{ view() === 'training' ? 'Faça valer cada série.' : 'Cada dia conta.' }}</h1><p>{{ view() === 'training' ? 'Sua evolução começa no próximo exercício.' : 'Revisite seus treinos e acompanhe sua constância.' }}</p></div><span class="outline-badge"><span aria-hidden="true">↻</span> Ciclo A · B · C</span></section>
@@ -45,7 +45,44 @@
               <section class="workout-card"><div class="workout-heading"><div><p class="eyebrow">TREINO {{ current.id }} <span> / CORPO TODO</span></p><h2>{{ current.title }}</h2><p>{{ current.description }}</p></div><span class="workout-symbol" aria-hidden="true">↗</span></div>
                 <div class="table-heading" aria-hidden="true"><span>EXERCÍCIO</span><span>SÉRIES × REPS</span><span>DESCANSO</span><span>CARGA</span><span>FEITO</span></div>
                 @for (exercise of current.exercises; track exercise.id; let i = $index) {
-                  <article class="exercise-row" [class.done]="entry(exercise.id)?.completed"><div class="exercise-name"><span class="exercise-number">{{ (i + 1).toString().padStart(2, '0') }}</span><div><h3>{{ exercise.name }}</h3><span class="muscle">{{ exercise.group }}</span><a [href]="exercise.video" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'Buscar demonstração de ' + exercise.name + ' no YouTube (nova aba)'">▶ Ver execução <span aria-hidden="true">↗</span></a></div></div><div class="exercise-meta"><small>Séries × reps</small><strong>{{ exercise.sets }} <span>×</span> {{ exercise.reps }}</strong></div><div class="exercise-meta rest"><small>Descanso</small><span>{{ exercise.rest }}</span></div><label class="weight"><span class="sr-only">Carga de {{ exercise.name }} em kg</span><span class="weight-input"><input #weight [name]="'weight-' + exercise.id" autocomplete="off" type="number" min="0" max="2000" step="0.5" inputmode="decimal" [value]="entry(exercise.id)?.weightKg ?? ''" [placeholder]="previousWeight(exercise.id)?.toString() ?? '—'" [disabled]="saving()" (change)="changeWeight(exercise, weight)"><span>kg</span></span><small>{{ previousWeight(exercise.id) !== null ? 'Anterior: ' + previousWeight(exercise.id) + ' kg' : 'Primeiro registro' }}</small></label><label class="complete"><input [name]="'completed-' + exercise.id" type="checkbox" [checked]="entry(exercise.id)?.completed ?? false" [disabled]="saving()" (change)="update(exercise.id, { completed: $any($event.target).checked })" [attr.aria-label]="'Marcar ' + exercise.name + ' como concluído'"><span class="sr-only">Concluído</span></label></article>
+                  <article class="exercise-row" [class.done]="entry(exercise.id)?.completed">
+                    <div class="exercise-name">
+                      <span class="exercise-number">{{ (i + 1).toString().padStart(2, '0') }}</span>
+                      <div>
+                        <h3>{{ exercise.name }}</h3>
+                        <span class="muscle">{{ exercise.group }}</span>
+                        <a [href]="exercise.video" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'Buscar demonstração de ' + exercise.name + ' no YouTube (nova aba)'">▶ Ver execução <span aria-hidden="true">↗</span></a>
+                        <button class="weight-history-toggle" type="button" [attr.aria-expanded]="expandedWeightHistory() === exercise.id" [attr.aria-controls]="'weight-history-' + exercise.id" (click)="toggleWeightHistory(exercise.id)">↗ {{ expandedWeightHistory() === exercise.id ? 'Ocultar evolução' : 'Ver evolução de carga' }}</button>
+                      </div>
+                    </div>
+                    <div class="exercise-meta"><small>Séries × reps</small><strong>{{ exercise.sets }} <span>×</span> {{ exercise.reps }}</strong></div>
+                    <div class="exercise-meta rest"><small>Descanso</small><span>{{ exercise.rest }}</span></div>
+                    <label class="weight"><span class="sr-only">Carga de {{ exercise.name }} em kg</span><span class="weight-input"><input #weight [name]="'weight-' + exercise.id" autocomplete="off" type="number" min="0" max="2000" step="0.5" inputmode="decimal" [value]="entry(exercise.id)?.weightKg ?? ''" [placeholder]="previousWeight(exercise.id)?.toString() ?? '—'" [disabled]="saving()" (change)="changeWeight(exercise, weight)"><span>kg</span></span><small>{{ previousWeight(exercise.id) !== null ? 'Anterior: ' + previousWeight(exercise.id) + ' kg' : 'Primeiro registro' }}</small></label>
+                    <label class="complete"><input [name]="'completed-' + exercise.id" type="checkbox" [checked]="entry(exercise.id)?.completed ?? false" [disabled]="saving()" (change)="update(exercise.id, { completed: $any($event.target).checked })" [attr.aria-label]="'Marcar ' + exercise.name + ' como concluído'"><span class="sr-only">Concluído</span></label>
+                    @if (expandedWeightHistory() === exercise.id) {
+                      <section class="weight-history-panel" [id]="'weight-history-' + exercise.id" [attr.aria-label]="'Evolução de carga de ' + exercise.name">
+                        <div class="weight-history-heading"><div><p class="eyebrow">EVOLUÇÃO DE CARGA</p><h4>{{ exercise.name }}</h4></div><button type="button" class="weight-history-close" (click)="toggleWeightHistory(exercise.id)" [attr.aria-label]="'Fechar evolução de carga de ' + exercise.name">×</button></div>
+                        @if (loadingWeightHistory()) {
+                          <p class="weight-history-state" role="status">Carregando evolução…</p>
+                        } @else if (weightHistoryError()) {
+                          <p class="weight-history-state error" role="alert">{{ weightHistoryError() }}</p>
+                        } @else if (!weightHistory().length) {
+                          <p class="weight-history-state">Registre uma carga neste exercício para começar a acompanhar sua evolução.</p>
+                        } @else {
+                          <div class="weight-history-summary"><strong>{{ formatWeight(latestWeight()!) }}</strong><span>última carga</span>@if (weightChange() !== null) {<small [class.positive]="weightChange()! > 0" [class.negative]="weightChange()! < 0">{{ weightChange()! > 0 ? '+' : '' }}{{ formatWeight(weightChange()!) }} desde o primeiro registro</small>}</div>
+                          <div class="weight-history-chart-wrap">
+                            <svg class="weight-history-chart" viewBox="0 0 320 120" role="img" [attr.aria-label]="'Gráfico de evolução de carga de ' + exercise.name"><path class="weight-history-grid" [attr.d]="weightGridPath()"></path><polyline [attr.points]="weightChartPolyline()"></polyline></svg>
+                            <div class="weight-history-y-axis" aria-hidden="true">
+                              <span [style.top.%]="weightChart().yTicks[0].yPercent">{{ formatWeight(weightChart().yTicks[0].value) }}</span>
+                              <span [style.top.%]="weightAxisTick(1).yPercent" [style.display]="weightChart().yTicks.length > 1 ? 'block' : 'none'">{{ formatWeight(weightAxisTick(1).value) }}</span>
+                              <span [style.top.%]="weightAxisTick(2).yPercent" [style.display]="weightChart().yTicks.length > 1 ? 'block' : 'none'">{{ formatWeight(weightAxisTick(2).value) }}</span>
+                            </div>
+                            <div class="weight-history-x-axis" aria-hidden="true"><span>{{ formatChartDate(weightHistory()[0].date) }}</span><span [style.visibility]="weightHistory().length > 1 ? 'visible' : 'hidden'">{{ formatChartDate(weightHistory().at(-1)!.date) }}</span></div>
+                          </div>
+                        }
+                      </section>
+                    }
+                  </article>
                 }
                 @if (current.cardio) {<div class="cardio"><span aria-hidden="true">↝</span><div><strong>Para fechar o treino</strong><p>{{ current.cardio }}</p></div><span class="cardio-tag">CARDIO</span></div>}
                 <footer class="save-status" aria-live="polite"><span>{{ saving() ? 'Salvando alterações…' : unsaved() ? 'Alterações pendentes' : saved() ? '✓ Tudo salvo' : 'Suas alterações são salvas automaticamente' }}</span><span>{{ current.exercises.length }} exercícios · {{ selectedDate() | date:'dd/MM/yyyy' }}</span></footer>

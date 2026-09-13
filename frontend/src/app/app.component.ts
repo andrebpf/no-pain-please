@@ -1,15 +1,40 @@
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Auth, GoogleAuthProvider, User, authState, signInWithPopup, signOut } from '@angular/fire/auth';
+import { Auth, GoogleAuthProvider, User, authState, signInWithEmailAndPassword, signInWithPopup, signOut } from '@angular/fire/auth';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 import { Exercise, TrainingPlan } from './training-plans';
-import { ExerciseProgress, TrainingDay, TrainingDaysService } from './training-days.service';
+import { ExerciseProgress, ExerciseWeightPoint, TrainingDay, TrainingDaysService } from './training-days.service';
+import { environment } from '../environments/environment';
 
 // Calendar keys use the user's training timezone, never UTC day boundaries.
 export function trainingDate(date = new Date()): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+}
+
+interface WeightChartPoint extends ExerciseWeightPoint {
+  x: number;
+  y: number;
+}
+
+interface WeightAxisTick {
+  value: number;
+  y: number;
+  yPercent: number;
+}
+
+interface WeightDateLabel {
+  date: string;
+  x: number;
+  xPercent: number;
+  anchor: 'start' | 'middle' | 'end';
+}
+
+interface WeightChart {
+  points: WeightChartPoint[];
+  yTicks: WeightAxisTick[];
+  dateLabels: WeightDateLabel[];
 }
 
 @Component({
@@ -25,6 +50,7 @@ export class AppComponent {
   private readonly destroyRef = inject(DestroyRef);
   private generation = 0;
   readonly user = signal<User | null>(null);
+  readonly localDemoLogin = !!environment.firebaseEmulator;
   readonly authReady = signal(false);
   readonly loading = signal(false);
   readonly saving = signal(false);
@@ -39,6 +65,10 @@ export class AppComponent {
   readonly draft = signal<ExerciseProgress[]>([]);
   readonly attended = signal(false);
   readonly view = signal<'training' | 'history'>('training');
+  readonly expandedWeightHistory = signal<string | null>(null);
+  readonly weightHistory = signal<ExerciseWeightPoint[]>([]);
+  readonly loadingWeightHistory = signal(false);
+  readonly weightHistoryError = signal('');
   readonly plan = computed(() => this.plans().find(plan => plan.id === this.selectedPlan()));
   readonly completed = computed(() => this.draft().filter(exercise => exercise.completed).length);
   readonly progress = computed(() => this.plan()?.exercises.length ? Math.round(this.completed() / this.plan()!.exercises.length * 100) : 0);
@@ -54,11 +84,54 @@ export class AppComponent {
   });
   readonly weekCount = computed(() => this.week().filter(day => day.attended).length);
   readonly firstName = computed(() => this.user()?.displayName?.split(' ')[0] || 'Atleta');
+  readonly weightChart = computed<WeightChart>(() => {
+    const points = this.weightHistory();
+    if (!points.length) return { points: [], yTicks: [], dateLabels: [] };
+    const weights = points.map(point => point.weightKg);
+    const minimum = Math.min(...weights);
+    const maximum = Math.max(...weights);
+    const margin = Math.max((maximum - minimum) * .15, 2.5);
+    const lowerBound = minimum - margin;
+    const range = Math.max(maximum + margin - lowerBound, 1);
+    const left = 44;
+    const right = 304;
+    const bottom = 88;
+    const top = 14;
+    const y = (weight: number) => bottom - (weight - lowerBound) / range * (bottom - top);
+    const chartPoints = points.map((point, index) => ({
+      ...point,
+      x: points.length === 1 ? (left + right) / 2 : left + index * (right - left) / (points.length - 1),
+      y: y(point.weightKg)
+    }));
+    const tickValues = minimum === maximum ? [minimum] : [minimum, (minimum + maximum) / 2, maximum];
+    const labelIndexes = [...new Set([0, Math.round((points.length - 1) / 2), points.length - 1])];
+    return {
+      points: chartPoints,
+      yTicks: tickValues.map(value => ({ value, y: y(value), yPercent: y(value) / 1.2 })),
+      dateLabels: labelIndexes.map(index => ({
+        date: points[index].date,
+        x: chartPoints[index].x,
+        xPercent: chartPoints[index].x / 3.2,
+        anchor: index === 0 ? 'start' : index === points.length - 1 ? 'end' : 'middle'
+      }))
+    };
+  });
+  readonly weightChartPolyline = computed(() => this.weightChart().points.map(point => `${point.x},${point.y}`).join(' '));
+  readonly weightGridPath = computed(() => this.weightChart().yTicks.map(tick => `M44 ${tick.y}H304`).join(' '));
+  readonly latestWeight = computed(() => this.weightHistory().at(-1)?.weightKg ?? null);
+  readonly weightChange = computed(() => {
+    const points = this.weightHistory();
+    return points.length < 2 ? null : points.at(-1)!.weightKg - points[0].weightKg;
+  });
+  private readonly weightFormatter = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 });
+  private readonly historyDateFormatter = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short' });
+  private readonly chartDateFormatter = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'short' });
 
   constructor() {
     authState(this.auth).pipe(takeUntilDestroyed()).subscribe(user => {
       this.generation++; this.user.set(user); this.authReady.set(true);
       this.days.set([]); this.plans.set([]); this.draft.set([]); this.error.set(''); this.unsaved.set(false); this.saving.set(false);
+      this.expandedWeightHistory.set(null); this.weightHistory.set([]); this.loadingWeightHistory.set(false); this.weightHistoryError.set('');
       if (user) this.load();
     });
     const timer = setInterval(() => this.checkDate(), 15000);
@@ -119,6 +192,34 @@ export class AppComponent {
     return null;
   }
 
+  toggleWeightHistory(exerciseId: string) {
+    if (this.expandedWeightHistory() === exerciseId) {
+      this.expandedWeightHistory.set(null);
+      return;
+    }
+    this.expandedWeightHistory.set(exerciseId);
+    this.weightHistory.set([]); this.loadingWeightHistory.set(true); this.weightHistoryError.set('');
+    this.api.weightHistory(exerciseId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: history => {
+        if (this.expandedWeightHistory() !== exerciseId) return;
+        this.weightHistory.set(history); this.loadingWeightHistory.set(false);
+      },
+      error: () => {
+        if (this.expandedWeightHistory() !== exerciseId) return;
+        this.loadingWeightHistory.set(false);
+        this.weightHistoryError.set('Não foi possível carregar a evolução agora. Tente novamente.');
+      }
+    });
+  }
+
+  formatWeight(weight: number) { return `${this.weightFormatter.format(weight)} kg`; }
+  formatHistoryDate(date: string) { return this.historyDateFormatter.format(new Date(`${date}T12:00:00Z`)); }
+  formatChartDate(date: string) { return this.chartDateFormatter.format(new Date(`${date}T12:00:00Z`)); }
+  weightAxisTick(index: number): WeightAxisTick {
+    const ticks = this.weightChart().yTicks;
+    return ticks[index] ?? ticks[0];
+  }
+
   changeWeight(exercise: Exercise, input: HTMLInputElement) {
     if (!input.validity.valid) { input.reportValidity(); return; }
     const weightKg = input.value === '' ? null : Number(input.value);
@@ -157,7 +258,10 @@ export class AppComponent {
 
   async login() {
     this.error.set('');
-    try { await signInWithPopup(this.auth, new GoogleAuthProvider()); }
+    try {
+      if (this.localDemoLogin) await signInWithEmailAndPassword(this.auth, 'demo@no-pain-please.local', 'demo-local-password');
+      else await signInWithPopup(this.auth, new GoogleAuthProvider());
+    }
     catch { this.error.set('Não foi possível entrar. Tente novamente com a conta cadastrada.'); }
   }
   async logout() {

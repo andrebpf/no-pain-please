@@ -1,6 +1,7 @@
 package com.nopainplease.api.workout.application.service;
 
 import com.nopainplease.api.workout.application.exception.InvalidTrainingDayException;
+import com.nopainplease.api.workout.application.port.in.ListExerciseWeightHistoryUseCase;
 import com.nopainplease.api.workout.application.port.in.ListTrainingDaysUseCase;
 import com.nopainplease.api.workout.application.port.in.SaveTrainingDayUseCase;
 import com.nopainplease.api.workout.application.port.out.TrainingDayRepository;
@@ -11,7 +12,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class TrainingDayService implements ListTrainingDaysUseCase, SaveTrainingDayUseCase {
+public final class TrainingDayService implements
+        ListTrainingDaysUseCase, ListExerciseWeightHistoryUseCase, SaveTrainingDayUseCase {
     private final TrainingDayRepository trainingDays;
     private final TrainingPlanRepository trainingPlans;
     private final Clock clock;
@@ -28,6 +30,17 @@ public final class TrainingDayService implements ListTrainingDaysUseCase, SaveTr
     @Override
     public List<TrainingDay> list(String userId) {
         return trainingDays.findAll(userId);
+    }
+
+    @Override
+    public List<WeightPoint> list(String userId, String exerciseId) {
+        return trainingDays.findAll(userId).stream()
+                .flatMap(day -> day.exercises().stream()
+                        .filter(exercise -> exercise.id().equals(exerciseId))
+                        .filter(exercise -> exercise.weightKg() != null)
+                        .map(exercise -> new WeightPoint(day.date(), exercise.weightKg())))
+                .sorted(java.util.Comparator.comparing(WeightPoint::date))
+                .toList();
     }
 
     @Override
