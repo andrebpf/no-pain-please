@@ -14,7 +14,7 @@ The browser signs a user in with Firebase Authentication and includes its Fireba
 
 ```
 frontend/                 Angular standalone PWA
-backend/                  Spring Boot 4 / Java 21 REST API
+backend/                  Spring Boot 4 / Java 26 REST API
 firebase.json             Firebase Hosting configuration
 .firebaserc.example       Firebase project alias template
 ```
@@ -22,7 +22,7 @@ firebase.json             Firebase Hosting configuration
 ## Prerequisites
 
 - Node.js 20+ and npm
-- Java 21 and Maven 3.9+
+- Java 26 and Maven 3.9+
 - Firebase CLI (`npm install -g firebase-tools`)
 - Google Cloud CLI, authenticated to the target project
 
@@ -106,7 +106,7 @@ Open the PWA at `http://localhost:4200`. The Firebase Emulator UI is at `http://
 ## Debug the Java API in VS Code
 
 Open the repository root in VS Code through WSL and install the recommended
-**Extension Pack for Java** in WSL. Use Java 21 and wait for the backend Maven
+**Extension Pack for Java** in WSL. Use Java 26 and wait for the backend Maven
 project to finish importing.
 
 Start the emulators in a terminal at the repository root:

@@ -10,7 +10,7 @@ substitutions:
   _DEPLOY_ENV: production
 
 steps:
-  - name: maven:3.9-eclipse-temurin-21
+  - name: maven:3.9-eclipse-temurin-26
     dir: backend
     entrypoint: mvn
     args: ['-B', 'test']

@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-`frontend/` contains the Angular 19 standalone PWA. Application code lives in `frontend/src/app`, assets in `frontend/src/assets`, and Firebase settings in `frontend/src/environments`. `backend/` is a Java 21 Spring Boot API under `com.nopainplease.api`; configuration, authentication, and workout features have separate packages. Tests mirror production packages under `backend/src/test/java`. Root files configure Firebase Hosting, Firestore rules, and emulators. `scripts/` contains local seed and integration utilities.
+`frontend/` contains the Angular 19 standalone PWA. Application code lives in `frontend/src/app`, assets in `frontend/src/assets`, and Firebase settings in `frontend/src/environments`. `backend/` is a Java 26 Spring Boot API under `com.nopainplease.api`; configuration, authentication, and workout features have separate packages. Tests mirror production packages under `backend/src/test/java`. Root files configure Firebase Hosting, Firestore rules, and emulators. `scripts/` contains local seed and integration utilities.
 
 ## Build, Test, and Development Commands
 
