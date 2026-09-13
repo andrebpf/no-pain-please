@@ -14,7 +14,7 @@ The browser signs a user in with Firebase Authentication and includes its Fireba
 
 ```
 frontend/                 Angular standalone PWA
-backend/                  Spring Boot 3 / Java 21 REST API
+backend/                  Spring Boot 4 / Java 21 REST API
 firebase.json             Firebase Hosting configuration
 .firebaserc.example       Firebase project alias template
 ```
@@ -25,6 +25,26 @@ firebase.json             Firebase Hosting configuration
 - Java 21 and Maven 3.9+
 - Firebase CLI (`npm install -g firebase-tools`)
 - Google Cloud CLI, authenticated to the target project
+
+## Backend architecture
+
+The workout feature follows hexagonal architecture under
+`backend/src/main/java/com/nopainplease/api/workout`:
+
+```text
+adapter/in/web              REST controllers and HTTP request/response records
+application/port/in         use-case interfaces called by inbound adapters
+application/service         framework-free use-case implementations
+application/port/out        persistence interfaces required by the application
+domain/model                framework-free workout and training records
+adapter/out/firestore       Firestore implementations of output ports
+adapter/config              Spring bean wiring (the composition root)
+```
+
+Dependencies point inward: adapters depend on application ports and domain
+types, while the domain and application services have no Spring or Firestore
+dependencies. New delivery or persistence mechanisms should be added as
+adapters instead of being referenced from the core.
 
 ## Configure Firebase
 
