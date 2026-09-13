@@ -6,6 +6,7 @@
       "name": "Java API (local Firebase emulators)",
       "request": "launch",
       "mainClass": "com.nopainplease.api.NoPainPleaseApplication",
+      "projectName": "api",
       "cwd": "${workspaceFolder}/backend",
       "args": ["--spring.profiles.active=local"],
       "env": {
