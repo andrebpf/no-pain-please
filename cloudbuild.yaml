@@ -1,0 +1,67 @@
+# CI/CD pipeline. Environment-specific values live in deploy/environments/*.conf.
+timeout: 1200s
+
+substitutions:
+  _DEPLOY_ENV: production
+
+steps:
+  - name: maven:3.9-eclipse-temurin-21
+    dir: backend
+    entrypoint: mvn
+    args: ['-B', 'test']
+
+  - name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        source "deploy/environments/${_DEPLOY_ENV}.conf"
+        image="$${ARTIFACT_REGION}-docker.pkg.dev/$${GOOGLE_CLOUD_PROJECT}/$${ARTIFACT_REPOSITORY}/$${API_IMAGE_NAME}:$SHORT_SHA"
+        docker build --tag "$$image" backend
+
+  - name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        source "deploy/environments/${_DEPLOY_ENV}.conf"
+        image="$${ARTIFACT_REGION}-docker.pkg.dev/$${GOOGLE_CLOUD_PROJECT}/$${ARTIFACT_REPOSITORY}/$${API_IMAGE_NAME}:$SHORT_SHA"
+        docker push "$$image"
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        source "deploy/environments/${_DEPLOY_ENV}.conf"
+        image="$${ARTIFACT_REGION}-docker.pkg.dev/$${GOOGLE_CLOUD_PROJECT}/$${ARTIFACT_REPOSITORY}/$${API_IMAGE_NAME}:$SHORT_SHA"
+        gcloud run deploy "$$CLOUD_RUN_SERVICE" \
+          --image="$$image" \
+          --project="$$GOOGLE_CLOUD_PROJECT" \
+          --region="$$CLOUD_RUN_REGION" \
+          --allow-unauthenticated \
+          --service-account="$$CLOUD_RUN_RUNTIME_SERVICE_ACCOUNT" \
+          --min="$$CLOUD_RUN_MIN_INSTANCES" \
+          --max="$$CLOUD_RUN_MAX_INSTANCES" \
+          --cpu="$$CLOUD_RUN_CPU" \
+          --memory="$$CLOUD_RUN_MEMORY" \
+          --set-env-vars="GOOGLE_CLOUD_PROJECT=$$GOOGLE_CLOUD_PROJECT,API_CORS_ALLOWED_ORIGIN=$$API_CORS_ALLOWED_ORIGIN" \
+          --quiet
+
+  - name: node:22
+    dir: frontend
+    entrypoint: npm
+    args: ['ci']
+
+  - name: node:22
+    dir: frontend
+    entrypoint: npm
+    args: ['run', 'build']
+
+  - name: us-docker.pkg.dev/firebase-cli/us/firebase:15.29.0
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        source "deploy/environments/${_DEPLOY_ENV}.conf"
+        firebase deploy --project="$$FIREBASE_PROJECT_ID" --only=hosting,firestore --non-interactive

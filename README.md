@@ -108,28 +108,62 @@ to stop Java.
 
 ## Deploy
 
-Build and deploy the API to Cloud Run, substituting your project and preferred region:
+Production is deployed manually from your computer. There is no automatic GitHub
+deployment yet: this keeps a personal educational project simple and makes every
+production change an intentional action.
+
+First-time setup (only once per computer):
 
 ```bash
-gcloud run deploy no-pain-please-api \
-  --source backend \
-  --project your-project-id \
-  --region southamerica-east1 \
-  --allow-unauthenticated \
-  --set-env-vars GOOGLE_CLOUD_PROJECT=your-project-id,API_CORS_ALLOWED_ORIGIN=https://your-project-id.web.app
+gcloud auth login
+gcloud config set project no-pain-please
+firebase login
+chmod +x scripts/deploy-*.sh
 ```
 
-`--allow-unauthenticated` is intentional: Cloud Run permits the request through, while the application requires and validates a Firebase ID token for `/api/**` endpoints. Assign the Cloud Run runtime service account a role that can access Firestore (for example, `roles/datastore.user`).
-
-Then put the Cloud Run URL in `frontend/src/environments/environment.production.ts` as `apiBaseUrl`, build, and deploy Hosting:
+For a normal change, publish everything with:
 
 ```bash
-cd frontend
-npm install
-npm run build
-cd ..
-firebase deploy --only hosting
+./scripts/deploy-production.sh --confirm-production
 ```
+
+The command performs this sequence:
+
+1. `deploy-api.sh` asks Cloud Build to compile the Java API and deploys it to
+   Cloud Run in `southamerica-east1`.
+2. Cloud Run runs with zero minimum instances, one maximum instance, 1 CPU and
+   512 MiB. Its runtime identity is `no-pain-api@no-pain-please.iam.gserviceaccount.com`.
+3. `deploy-web.sh` builds Angular and publishes Firebase Hosting plus the
+   Firestore security rules.
+
+Use one of these when only one part changed:
+
+```bash
+./scripts/deploy-api.sh --confirm-production  # Java API only
+./scripts/deploy-web.sh --confirm-production  # Angular site and Firestore rules only
+```
+
+`--allow-unauthenticated` on Cloud Run is intentional: it lets browser requests
+reach the API, while the application validates Firebase ID tokens for every
+`/api/**` request. The Firestore rules deny browser-direct access, and the API
+uses the verified token UID to reach only that user's documents.
+
+The scripts are a deployment recipe, not a billing limit. Keep the Cloud Run
+spend cap enabled in Google Cloud Billing, and check the deployment output before
+sharing a new version.
+
+### Environments
+
+Non-secret deployment values are kept outside the pipeline in
+`deploy/environments/production.conf`. This includes the Google/Firebase project,
+Cloud Run region and limits, Artifact Registry image location, runtime service
+account, and CORS origin. `cloudbuild.yaml` reads this file using its
+`_DEPLOY_ENV` substitution.
+
+To introduce another environment later, copy `production.conf` to, for example,
+`staging.conf`, change its values, and configure a Cloud Build trigger with
+`_DEPLOY_ENV=staging`. Do not put passwords, API tokens, or service-account JSON
+keys in these files.
 
 ## Firestore shape
 

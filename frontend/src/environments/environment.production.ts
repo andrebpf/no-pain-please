@@ -1,13 +1,13 @@
 export const environment = {
   production: true,
   firebaseEmulator: undefined as { authUrl: string } | undefined,
-  apiBaseUrl: 'https://REPLACE_WITH_CLOUD_RUN_URL/api',
+  apiBaseUrl: 'https://no-pain-please-api-2898049062.southamerica-east1.run.app/api',
   firebase: {
-    apiKey: 'REPLACE_WITH_FIREBASE_WEB_API_KEY',
-    authDomain: 'REPLACE_WITH_PROJECT.firebaseapp.com',
-    projectId: 'REPLACE_WITH_PROJECT_ID',
-    storageBucket: 'REPLACE_WITH_PROJECT.firebasestorage.app',
-    messagingSenderId: 'REPLACE_WITH_SENDER_ID',
-    appId: 'REPLACE_WITH_APP_ID'
+    apiKey: 'AIzaSyA0PduO2ZljhAXUH320b0UsXXRC_dIaM_U',
+    authDomain: 'no-pain-please.firebaseapp.com',
+    projectId: 'no-pain-please',
+    storageBucket: 'no-pain-please.firebasestorage.app',
+    messagingSenderId: '2898049062',
+    appId: '1:2898049062:web:e1d35a32dad29f92d38ee7'
   }
 };

@@ -15,3 +15,5 @@ management:
 app:
   cors:
     allowed-origin: ${API_CORS_ALLOWED_ORIGIN:http://localhost:4200}
+  firebase:
+    project-id: ${GOOGLE_CLOUD_PROJECT:}
